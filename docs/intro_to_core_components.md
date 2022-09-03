@@ -102,7 +102,7 @@ In most cases, the **assets** folder shouldn't be worked with too much since mos
 [Pygame](https://www.pygame.org/news) is a popular Python library for writing video games. In our case, we will be using the library for constructing the visual component of Chronos. The web interface is configured to allow pygame visuals to be streamed on it, and hence, we will standardise all Chronos visualisations to be built using Pygame. 
 
 <p align="center">
-  <img src="../../assets/game_theory_visuals.png" width="500" height="500"/>
+  <img src="../assets/game_theory_visuals.png" width="500" height="500"/>
 </p>
 <p align="center"><i>Example of a pygame visualisation from Chronos.</i></p>
 
