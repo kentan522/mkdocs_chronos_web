@@ -1,0 +1,486 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Core Modules for Development &#8212; Chronos Web  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Example Branches for References" href="branches.html" />
+    <link rel="prev" title="Introduction to the Core Components" href="intro_to_core_components.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="core-modules-for-development">
+<h1>Core Modules for Development<a class="headerlink" href="#core-modules-for-development" title="Permalink to this heading">¶</a></h1>
+<p>In this section, a detailed description of the different core modules built for connecting Chronos to the web interface is elaborated upon. These modules are simply “parent classes” which contains the essential attributes and methods that are likely used in all Chronos instances. In each Chronos instance, it is likely that you will have to program your own “child classes” that inherits from them to incorporate additional methods specific to your Chronos instance.</p>
+<p>After understanding the core modules here, you should be able to build your own child classes to suit the needs of your Chronos instance.</p>
+<section id="chronos-web-interface">
+<h2>Chronos-Web Interface<a class="headerlink" href="#chronos-web-interface" title="Permalink to this heading">¶</a></h2>
+<p>There are 4 main modules that should be understood before any Chronos-web development. The 4 modules which are contained in the folder <code class="docutils literal notranslate"><span class="pre">core_web</span></code> are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">command_parser</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">command_handler</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data_handler</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">web_table</span></code></p></li>
+</ul>
+<p>The first 3 modules (<code class="docutils literal notranslate"><span class="pre">command_parser</span></code>, <code class="docutils literal notranslate"><span class="pre">command_handler</span></code> and <code class="docutils literal notranslate"><span class="pre">data_handler</span></code>) are involved in the transfer of information between the web interface (through the command line) and Chronos. These modules are crucial for the linkage between the web interface and Chronos and will likely be used for inheritance into child classes. More on each of these modules will be detailed below.</p>
+<p>The 4th module (<code class="docutils literal notranslate"><span class="pre">web_table</span></code>) is an example of a class that can be created to display data from Chronos. In this particular example, <code class="docutils literal notranslate"><span class="pre">web_table</span></code> takes in certain agent-based data outputs from Chronos, processes them, before displaying them as a Dash table on the web interface. It is up to the developer to define their own class for displaying data (eg. you may wish to create a class for displaying data in a graph, or a bar chart - all of these components can be done with Dash apps). This module serves as a core example class that Chronos developers can use as a reference to understand the linkages between the modules.</p>
+<p>Before navigating to the section describing each module, their uses and how you can build upon it, it would be helpful to briefly study the flow chart below to get a rough idea of how the modules interact with one another alongside Chronos and the web interface.</p>
+<p align="center">
+  <img src="../../assets/flowchart_web_modules.png" width="800" height="500"/>
+</p>
+<p align="center"><i>Example of a pygame visualisation from Chronos.</i></p>
+<section id="core-web-modules">
+<h3>Core_web Modules<a class="headerlink" href="#core-web-modules" title="Permalink to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">command_parser</span></code></strong></p></li>
+</ol>
+<p>The <code class="docutils literal notranslate"><span class="pre">command_parser</span></code> handlers user-input commands by <strong>valididating</strong> them before <strong>parsing</strong> them and sending the commands to Chronos via a <code class="docutils literal notranslate"><span class="pre">Queue()</span></code> object (<code class="docutils literal notranslate"><span class="pre">commandQueue</span></code>). Functions for validating and parsing commands are written in the <code class="docutils literal notranslate"><span class="pre">command_parser</span></code>. The <code class="docutils literal notranslate"><span class="pre">command_parser</span></code> is called in a callback function that deals with the command line. For example, a method within <code class="docutils literal notranslate"><span class="pre">command_parser</span></code> may look like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="k">def</span> <span class="nf">create_delete_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span> <span class="c1"># Takes in input (commands sent by the user)</span>
+        
+        <span class="c1"># Note that the set rule for using the create agent function is:</span>
+        <span class="c1"># create [agent_group] [agent_id]</span>
+        <span class="n">keyList</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;command&#39;</span><span class="p">,</span> <span class="s1">&#39;agent-group&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">]</span>
+        <span class="n">inputList</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputList</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span> <span class="c1"># Since commands to create agents has to have 3 arguments, return None if it does not</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        
+        <span class="n">inputDict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">keyList</span><span class="p">)):</span>                        
+            <span class="n">inputDict</span><span class="p">[</span><span class="n">keyList</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">inputList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="c1"># Create a dictionary with keys from keyList and values from the command line input</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">commandQueue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">inputDict</span><span class="p">)</span> <span class="c1"># Put the dictionary into commandQueue - this will be read by the command_handler in Chronos</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_return</span> <span class="c1"># This renders a text that informs the user that their command was sent successfully - this is needed in returning out of the callback function</span>
+
+</pre></div>
+</div>
+<p>Note that if the command is valid, <code class="docutils literal notranslate"><span class="pre">inputDict</span></code> which contains info about the command (you may use your own data structure for storing info on commands) will be put into <code class="docutils literal notranslate"><span class="pre">commandQueue</span></code>, which will be sent to Chronos.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">command_parser</span></code> works hand in hand with the callback function on approximately Line 541 of <code class="docutils literal notranslate"><span class="pre">app.py</span></code> that has a function defined as <code class="docutils literal notranslate"><span class="pre">send_commands</span></code>. The general idea behind this callback function is outlined below with comments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialise the console_commands container by using a command_parser</span>
+<span class="n">cc_container</span> <span class="o">=</span> <span class="n">command_parser</span><span class="p">(</span><span class="n">commandQueue</span><span class="p">)</span>
+
+<span class="c1"># Call back that obtains commands from the interface command line and parses them to be processed in Chronos</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
+    <span class="n">Output</span><span class="p">(</span><span class="s1">&#39;hidden-div-dialog-4&#39;</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">),</span> <span class="c1"># Text beneath the command line</span>
+    <span class="n">Output</span><span class="p">(</span><span class="s1">&#39;hidden-div-dialog-4&#39;</span><span class="p">,</span> <span class="s1">&#39;style&#39;</span><span class="p">),</span> <span class="c1"># Style of the text beneath the command line (to either render invisible or visible)</span>
+    <span class="n">Output</span><span class="p">(</span><span class="s1">&#39;command-line-input&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span> <span class="c1"># Command-line - to erase it once a command has been sent</span>
+    <span class="n">State</span><span class="p">(</span><span class="s1">&#39;command-line-input&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span> <span class="c1"># Reads input from the command line (when the button is pressed)</span>
+    <span class="n">Input</span><span class="p">(</span><span class="s1">&#39;button-3&#39;</span><span class="p">,</span> <span class="s1">&#39;n_clicks&#39;</span><span class="p">)</span> <span class="c1"># Button for sending commands - can also use the &quot;enter&quot; key due to the custom js script </span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">send_commands</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">n_clicks</span><span class="p">):</span>
+    
+    <span class="c1"># Default text/style of text beneath the command line</span>
+    <span class="n">sendCommandText</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">P</span><span class="p">(</span><span class="s1">&#39;Your command has been sent!&#39;</span><span class="p">)</span>
+    <span class="n">sendCommandStyle</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">display</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span> <span class="c1"># display=&#39;none&#39; renders an invisible text</span>
+
+    <span class="c1"># Visibly does not return any text (because it is invisible) if the button is not clicked </span>
+    <span class="k">if</span> <span class="n">n_clicks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># n_clicks = None upon initialisation of the web interface</span>
+        <span class="n">n_clicks</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># We simply convert it to zero so that we can make integer comparisons when checking buttonIsPressed</span>
+        <span class="k">return</span> <span class="n">sendCommandText</span><span class="p">,</span> <span class="n">sendCommandStyle</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+    
+    <span class="n">buttonIsPressed</span> <span class="o">=</span> <span class="n">n_clicks</span> <span class="o">&gt;</span> <span class="n">sendCommandCount</span> <span class="c1"># Boolean for checking if the button is pressed</span>
+
+    <span class="c1">## Hash table mapping the commands and their functions - the first keyword of the command represents which method within command_parser should be called</span>
+    <span class="n">commandHash</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;create&#39;</span><span class="p">:</span> <span class="n">cc_container</span><span class="o">.</span><span class="n">create_delete_agents</span><span class="p">,</span>
+        <span class="s1">&#39;delete&#39;</span><span class="p">:</span> <span class="n">cc_container</span><span class="o">.</span><span class="n">create_delete_agents</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">buttonIsPressed</span><span class="p">:</span>
+        <span class="n">sendCommandStyle</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">}</span> <span class="c1"># Change the style of text beneath the command line - you need to render a text for sure when a command is sent</span>
+
+        <span class="k">if</span> <span class="nb">input</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="c1"># For empty sends</span>
+            <span class="n">sendCommandText</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">P</span><span class="p">(</span><span class="s1">&#39;You have not inserted any commands!&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">sendCommandText</span><span class="p">,</span> <span class="n">sendCommandStyle</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">commandHash</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span> <span class="c1"># Checks if the first keyword is within commandHash</span>
+
+            <span class="c1"># Passes the first keyword of the command into the function </span>
+            <span class="c1"># If the command is valid, an successful text/style render will be returned</span>
+            <span class="n">callbackOutput</span> <span class="o">=</span> <span class="n">commandHash</span><span class="p">[</span><span class="nb">input</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]](</span><span class="nb">input</span><span class="p">)</span> 
+
+            <span class="k">if</span> <span class="n">callbackOutput</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># callbackOutput will be None if the input is invalid</span>
+                <span class="k">return</span> <span class="n">callbackOutput</span>        
+
+        <span class="c1"># If its not a valid command/the first keyword is not in commandHash</span>
+        <span class="n">sendCommandText</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">P</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">input</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="s1">&#39;is not a valid command!&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sendCommandText</span><span class="p">,</span> <span class="n">sendCommandStyle</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+</pre></div>
+</div>
+<p>You can clearly see that if <code class="docutils literal notranslate"><span class="pre">command_parser</span></code> is successful in validating the command, the appropriate text/style will be returned (to the output defined by the callback decorator) to inform the user on the success. Otherwise if an incorrect command was entered, the user will also be informed about its failure.</p>
+<p><strong>How you may use this module:</strong></p>
+<p>With the flexibility of <code class="docutils literal notranslate"><span class="pre">command_parser</span></code>, you are free to define your own commands, implement your own rules/logic on how to validate these commands, and define how you wish to parse/package them (do you want them in a dict/list/certain format?) before sending them to Chronos for processing. Do refer to the example methods already made for creating/removing agents.</p>
+<ol class="arabic simple" start="2">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">command_handler</span></code></strong></p></li>
+</ol>
+<p>In each iteration of the main while loop within Chronos, the <code class="docutils literal notranslate"><span class="pre">commandQueue</span></code> object should be checked for new info to alert Chronos regarding any new commands being sent by the web interface. This is then passed into the <code class="docutils literal notranslate"><span class="pre">command_handler</span></code>, which processes the parsed commands and decides which Chronos-based commands to call. For instance, if it receives a command to create or delete an agent, it will call the agent-based create/delete functions. This is possible because the <code class="docutils literal notranslate"><span class="pre">command_handler</span></code> can be made to be connected with the Chronos agents due to the definition below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">command_handler</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">world</span><span class="p">):</span>
+        <span class="c1"># Attached to world to allow command_handler to work with Chronos agents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">world</span> <span class="o">=</span> <span class="n">world</span> 
+ 
+        <span class="c1"># Attach to controllers from world</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controllers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">controllers</span>
+
+        <span class="c1"># Define agent groups</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agent_groups</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Appends agent groups from controllers into self.agent_groups</span>
+        <span class="k">for</span> <span class="n">controller</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controllers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">agent_groups</span><span class="p">[</span><span class="n">controller</span><span class="o">.</span><span class="n">agent_group</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">agent_group</span>
+</pre></div>
+</div>
+<p>The connection of <code class="docutils literal notranslate"><span class="pre">command_handler</span></code> with Chronos is crucial to allow Chronos based functions to be called depending on the command received from the web interface. To call a certain Chronos based function, a generalised function that runs during each instance of the Chronos while loop is defined as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handle_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+    <span class="c1"># This method is called each time in the main simulation loop to check the commandQueue for commands</span>
+
+    <span class="k">if</span> <span class="n">command</span><span class="p">[</span><span class="s1">&#39;command&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;create&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__handle_create_agent</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="s1">&#39;agent-group&#39;</span><span class="p">],</span> <span class="n">command</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="s1">&#39;command&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;delete&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__handle_delete_agent</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="s1">&#39;agent-group&#39;</span><span class="p">],</span> <span class="n">command</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="s1">&#39;command&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;list&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__list_agent_groups</span><span class="p">()</span>
+
+    <span class="k">return</span>
+</pre></div>
+</div>
+<p>This function checks for the different possible commands being sent by the web interface and proceeds to call internal methods for handling each of the commands. For instance, if the command received was to “create”, <code class="docutils literal notranslate"><span class="pre">self.__handle_create_agent()</span></code> would be called, and the appropriate arguments will be passed into the function. <code class="docutils literal notranslate"><span class="pre">self.__handle_create_agent()</span></code> looks like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">__handle_create_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_group</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+    <span class="c1"># Used to handle create agent methods in agent groups</span>
+
+    <span class="k">if</span> <span class="n">agent_group</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_groups</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span> <span class="c1"># Checks if the agent_group sent by the web interface is a valid agent_group</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Agent group not found!&#39;</span><span class="p">)</span> <span class="c1"># Prints this to the console if its not</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agent_groups</span><span class="p">[</span><span class="n">agent_group</span><span class="p">]</span><span class="o">.</span><span class="n">create_agent</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="c1"># Otherwise call the agent group&#39;s &quot;create_agent&quot; function</span>
+
+    <span class="k">return</span>
+
+</pre></div>
+</div>
+<p>As you can see, there is a final step of validation on the side of Chronos that can only be done by the <code class="docutils literal notranslate"><span class="pre">command_handler</span></code> which is attached to Chronos. This is because the web interface do not yet have any information regarding the state of Chronos. In short, while <code class="docutils literal notranslate"><span class="pre">command_parser</span></code> seeks to validate the syntax and existence of commands, <code class="docutils literal notranslate"><span class="pre">command_handler</span></code> also seeks validate whether a certain command can be allowed to execute (for instance, <code class="docutils literal notranslate"><span class="pre">command_parser</span></code> may validate a create agent command, but <code class="docutils literal notranslate"><span class="pre">command_handler</span></code> may not validate it due to the non-existent agent group that the command is trying to create an agent from).</p>
+<p><strong>How you may use this module:</strong></p>
+<p>You are free to write internal <code class="docutils literal notranslate"><span class="pre">command_handler</span></code> functions that handles the different kinds of commands you may receive from the <code class="docutils literal notranslate"><span class="pre">commandQueue</span></code>, and implement logic to call the appropriate Chronos-based functions as you wish.</p>
+<ol class="arabic simple" start="3">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">data_handler</span></code></strong></p></li>
+</ol>
+<p>The state of the Chronos instance will change:</p>
+<ul class="simple">
+<li><p>as Chronos is allowed to run naturally (via each call to <code class="docutils literal notranslate"><span class="pre">world.step()</span></code>), or…</p></li>
+<li><p>when a command sent by the user from the web interface initiates a certain Chronos function to be called during the Chronos run.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">command_parser</span></code> and <code class="docutils literal notranslate"><span class="pre">command_handler</span></code> has already dealt with the validity of commands, as well as the determining the appropriate Chronos function to be called. <code class="docutils literal notranslate"><span class="pre">data_handler</span></code> now deals with how the required information regarding the new state of Chronos may passed back to the web interface to be displayed neatly in tables/graphs/charts. <code class="docutils literal notranslate"><span class="pre">data_handler</span></code> is also attached to Chronos in a similar way to <code class="docutils literal notranslate"><span class="pre">command_handler</span></code>, as it will be extracting information on the new state of Chronos to be sent back to the web interface via the <code class="docutils literal notranslate"><span class="pre">dataOutputQueue</span></code> object.</p>
+<p>An example of the how <code class="docutils literal notranslate"><span class="pre">data_handler</span></code> might handle data is shown below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_agent_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Processes data in the form of data and columns to be displayed on the table of the web interface</span>
+        <span class="n">agent_id_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">agent_group_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">agent_group</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent_groups</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="k">for</span> <span class="n">agent_id</span> <span class="ow">in</span> <span class="n">agent_group</span><span class="o">.</span><span class="n">agent_ids</span><span class="p">:</span>
+                <span class="n">agent_id_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">agent_id</span><span class="p">)</span>
+                <span class="n">agent_group_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">agent_group</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+            <span class="s2">&quot;Agent ID&quot;</span><span class="p">:</span> <span class="n">agent_id_list</span><span class="p">,</span>
+            <span class="s2">&quot;Agent Group&quot;</span><span class="p">:</span> <span class="n">agent_group_list</span><span class="p">,</span>
+            <span class="p">})</span>   
+
+        <span class="k">return</span> <span class="n">df</span>
+</pre></div>
+</div>
+<p>Since the web interface contains a table that serves to display agent-based data, the data_handlers obtains data about current active agents and creates a pandas dataframe from it. It returns the dataframe which will be put into <code class="docutils literal notranslate"><span class="pre">dataOutputQueue</span></code> as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Handles Chronos info before passing it to the web interface (via dataQueueOutput)</span>
+<span class="n">agent_data_hand</span> <span class="o">=</span> <span class="n">data_handler</span><span class="p">()</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">agent_data_hand</span><span class="o">.</span><span class="n">process_agent_data</span><span class="p">()</span>
+<span class="n">dataQueueOutput</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The data in <code class="docutils literal notranslate"><span class="pre">dataOutputQueue</span></code> is processed and used for display purposes by a final receiving module on the web interface side, which will be discussed next.</p>
+<p><strong>How you may use this module:</strong></p>
+<p>You are free to extract data from Chronos as you wish, parse and package them nicely, before putting them into <code class="docutils literal notranslate"><span class="pre">dataQueueOutput</span></code>.</p>
+<ol class="arabic simple" start="4">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">web_table</span></code></strong></p></li>
+</ol>
+<p>This module is not necessarily a core module, but for purposes of demonstration it will also be included as a reference. <code class="docutils literal notranslate"><span class="pre">web_table</span></code> is an example of a module that takes in the output from <code class="docutils literal notranslate"><span class="pre">dataQueueOutput</span></code> and does some final processing before displaying them as a Dash table (in this case).</p>
+<p>On the web interface side, depending on where you wish for this your Chronos data to be displayed, you could work with the <code class="docutils literal notranslate"><span class="pre">dcc.Interval</span></code> element of Dash to constantly call a function that reads in output from dataQueueOutput. For instance, since in this case, the data is used for rendering a dash table, a callback function that deals with the dash table would look like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialise the web_table object</span>
+<span class="n">d_table</span> <span class="o">=</span> <span class="n">web_table</span><span class="p">()</span>
+
+<span class="c1"># Call back that updates the table according to web_table</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
+    <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;data-table&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">),</span> <span class="c1"># Table data</span>
+    <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;data-table&quot;</span><span class="p">,</span> <span class="s2">&quot;columns&quot;</span><span class="p">),</span> <span class="c1"># Table columns</span>
+    <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;table-update-interval&quot;</span><span class="p">,</span> <span class="s1">&#39;n_intervals&#39;</span><span class="p">)</span> <span class="c1"># dcc.Interval element (configured to read and update every 1 second)</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">update_data_table</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">dataQueueOutput</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+        <span class="n">d_table</span><span class="o">.</span><span class="n">update_df_from_Chronos</span><span class="p">(</span><span class="n">dataQueueOutput</span><span class="p">)</span> <span class="c1"># Updates the table if dataQueueOutput contains something</span>
+
+    <span class="k">return</span> <span class="n">d_table</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">d_table</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+</div>
+<p><strong>How you may use this module:</strong></p>
+<p>Feel free to define your own class for rendering and outputting a certain graphical element on the web interface. It could be a graph, chart, or even more tables to showcase different kinds of data.</p>
+<p>Note that for purposes of simplicity, separate <code class="docutils literal notranslate"><span class="pre">data_handler</span></code> objects should be used for outputting separate components. For instance, if you would like to render two independent tables, you should have two <code class="docutils literal notranslate"><span class="pre">data_handler</span></code> objects for each of them, as well as two <code class="docutils literal notranslate"><span class="pre">Queue()</span></code> objects that will be independently read by each of their callback functions.</p>
+</section>
+<section id="additional-info">
+<h3>Additional info<a class="headerlink" href="#additional-info" title="Permalink to this heading">¶</a></h3>
+<p>There is a file - <code class="docutils literal notranslate"><span class="pre">command_list.json</span></code> that exists in the <code class="docutils literal notranslate"><span class="pre">core_web</span></code> directory. The contents of the file is read by <code class="docutils literal notranslate"><span class="pre">app.py</span></code> to render the command list section of the web interface. Feel free to add whatever command you wish to add into this file for it to be displayed on the web interface too.</p>
+</section>
+</section>
+<section id="gui-pygame">
+<h2>GUI (Pygame)<a class="headerlink" href="#gui-pygame" title="Permalink to this heading">¶</a></h2>
+<p>A base parent class for the Pygame visualisation of Chronos has been built to allow for a more standardised and consistent approach to building Pygame visualisations. The base parent class can be located as <code class="docutils literal notranslate"><span class="pre">gui.py</span></code> in the directory <code class="docutils literal notranslate"><span class="pre">core_gui</span></code>. The <code class="docutils literal notranslate"><span class="pre">pygame_streamer</span></code> object is also defined in this folder.</p>
+<section id="core-gui-modules">
+<h3>Core_gui Modules<a class="headerlink" href="#core-gui-modules" title="Permalink to this heading">¶</a></h3>
+<p>The core <code class="docutils literal notranslate"><span class="pre">gui</span></code> class contains basic methods such as:</p>
+<ul class="simple">
+<li><p>initialising pygame</p></li>
+<li><p>setting the pygame window dimensions</p></li>
+<li><p>importing images into the pygame environment</p></li>
+<li><p>setting colors/fonts</p></li>
+<li><p><strong>drawing the pygame window</strong> (this is the main method for rendering the pygame window continuously, which will be called during each step of the main while loop of Chronos)</p></li>
+</ul>
+<p>The current core <code class="docutils literal notranslate"><span class="pre">gui</span></code> class is configured to render an example pygame environment with the help of the <code class="docutils literal notranslate"><span class="pre">movingcircle</span></code> object for the sake of demonstration and testing purposes only, and is not actually connected to Chronos. However, it may serve as a useful reference as to how you may want to structure your pygame environment. Most of the methods within the core <code class="docutils literal notranslate"><span class="pre">gui</span></code> class can be inheritted, and if need be, overwritten by the child <code class="docutils literal notranslate"><span class="pre">gui</span></code> class.</p>
+<p align="center">
+  <img src="../../assets/example_pygame_sim.png" width="800" height="500"/>
+</p>
+<p align="center"><i>Pygame visualisation from the core gui module.</i></p>
+<p><strong>How you may use this module:</strong></p>
+<p>You are free to define your own main <code class="docutils literal notranslate"><span class="pre">gui</span></code> class as well as classes for independent components within your pygame environment. For instance, you may have a main <code class="docutils literal notranslate"><span class="pre">gui_controller</span></code> class that inherits from the core <code class="docutils literal notranslate"><span class="pre">gui</span></code> class to manage most of the pygame-related functions, while also having different classes for the different agent groups with Chronos, each with their own independent attributes. In most cases, information from Chronos is required to update the pygame window - consider setting the required component of Chronos (such as <code class="docutils literal notranslate"><span class="pre">world</span></code> or a certain agent group) as an attribute of your main <code class="docutils literal notranslate"><span class="pre">gui_controller</span></code> class during initialisation. That way, you will be able to access any Chronos related attributes.</p>
+<p>In any case, <a class="reference external" href="https://realpython.com/pygame-a-primer/">this tutorial on Pygame</a> has proved to be helpful in the development of this core module. The main concepts you should be familiar with is the typical structure of a pygame environment (how to set up the loop for the pygame environment), how to draw and specify positions of pygame components, and rendering text.</p>
+</section>
+<section id="id1">
+<h3>Additional info<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
+<p>The two additional files contained within <code class="docutils literal notranslate"><span class="pre">core_gui</span></code> - <code class="docutils literal notranslate"><span class="pre">colorlist.json</span></code> and <code class="docutils literal notranslate"><span class="pre">pygamefonts.txt</span></code> contains some colors (for your pygame components, background etc.) as well as some pygame fonts (for rendering text) which can be used in your environment.</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">colorlist.json</span></code> file was derived from the library <code class="docutils literal notranslate"><span class="pre">colordict</span></code>. By default, the core <code class="docutils literal notranslate"><span class="pre">gui</span></code> module has set <code class="docutils literal notranslate"><span class="pre">self.colors</span> <span class="pre">=</span> <span class="pre">colordict.ColorDict()</span></code>, which results in <code class="docutils literal notranslate"><span class="pre">self.colors</span></code> being a dict with color names as keys and rgb values as the corresponding values. When specifying colors for the pygame environment, you may obtain any colors (contained within <code class="docutils literal notranslate"><span class="pre">colorlist.json</span></code>), for example:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">white</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;white&#39;</span><span class="p">]</span>
+<span class="n">black</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;black&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Of course, you are more than welcome to overwritted self.colors with a dictionary of only some specific colors that you will use.</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">pygamefonts.txt</span></code> file contains some pygame allowed fonts for rendering. Feel free to set your own fonts to be used in <code class="docutils literal notranslate"><span class="pre">self.fonts</span></code> as a dictionary. For instance, if your pygame environment makes use of two fonts - each for rendering their own texts, you may define your fonts as:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">fonts</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;vehicle_font&#39;</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">SysFont</span><span class="p">(</span><span class="s1">&#39;arial&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="s1">&#39;pedestrian_font&#39;</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">SysFont</span><span class="p">(</span><span class="s1">&#39;helveticaneue&#39;</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Apart from the core web interface branch (<code class="docutils literal notranslate"><span class="pre">chronosweb_core</span></code>), feel free to check out the branch named <code class="docutils literal notranslate"><span class="pre">chronosweb_gt</span></code> for a more complex example on how it inherits the core <code class="docutils literal notranslate"><span class="pre">gui</span></code> class to its own child <code class="docutils literal notranslate"><span class="pre">gui</span></code> class for that specific Chronos instance.</p>
+</section>
+</section>
+<section id="how-to-structure-the-main-chronos-file">
+<h2>How to Structure the Main Chronos File<a class="headerlink" href="#how-to-structure-the-main-chronos-file" title="Permalink to this heading">¶</a></h2>
+<p>When all the core web and core gui components are integrated together, the <code class="docutils literal notranslate"><span class="pre">main.py</span></code> of Chronos should be structured as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="c1"># This function is called as a subprocess in app.py</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">dataQueueOutput</span><span class="p">,</span> <span class="n">consoleQueue</span><span class="p">,</span> <span class="n">commandQueue</span><span class="p">):</span> 
+
+    <span class="c1">### ----- Main Chronos Code ----- ###</span>
+    <span class="c1"># Defining world</span>
+    <span class="o">...</span>
+
+    <span class="c1"># Defining controllers, agents, logic</span>
+    <span class="o">...</span>
+
+    <span class="c1"># Attaching controllers to world, agents/logic to controllers</span>
+    <span class="o">...</span>
+
+    <span class="c1">### ----- Pygame Setting Up Code ----- ###</span>
+    <span class="c1"># Defining pygame GUI object</span>
+    <span class="n">gui</span> <span class="o">=</span> <span class="n">GUI</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+    <span class="c1"># Setting up the pygame window </span>
+    <span class="n">gui</span><span class="o">.</span><span class="n">set_window</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+    <span class="c1">### ----- Initialising some objects ----- ###</span>
+    <span class="c1"># Initialising pygame streamer</span>
+    <span class="n">streamer</span> <span class="o">=</span> <span class="n">PygameStreamer</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+    <span class="c1"># Initialising command_handler</span>
+    <span class="n">com_hand</span> <span class="o">=</span> <span class="n">command_handler</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+    <span class="c1"># Initialising data_handler</span>
+    <span class="n">data_hand</span> <span class="o">=</span> <span class="n">data_handler</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+    <span class="c1">### ----- Initialise subprocess for checking Chronos stop ----- ###</span>
+    <span class="n">shared_val</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">stop_stream_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="c1"># This process changes shared_val to 1 when stop is initiated</span>
+
+    <span class="c1">### ----- Main Chronos Loop ----- ###</span>
+    <span class="k">while</span> <span class="n">running</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">redirect_stdout</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">())</span> <span class="k">as</span> <span class="n">output</span><span class="p">:</span> <span class="c1"># This is needed to read console outputs</span>
+        
+            <span class="c1"># Break out of loop if stop/refresh button is pressed</span>
+            <span class="k">if</span> <span class="n">shared_val</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+                <span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">break</span> 
+
+            <span class="c1"># Get commands from the command queue if available</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">commandQueue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                <span class="n">command</span> <span class="o">=</span> <span class="n">commandQueue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                <span class="n">com_hand</span><span class="o">.</span><span class="n">handle_all</span><span class="p">(</span><span class="n">command</span><span class="p">)</span> <span class="c1"># Handles command and decides which Chronos based function to call</span>
+
+            <span class="c1"># Update Chronos instance by going into the next step</span>
+            <span class="n">world</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+            <span class="c1"># Update the gui window for each step</span>
+            <span class="n">gui</span><span class="o">.</span><span class="n">draw_window</span><span class="p">()</span>
+
+            <span class="c1"># Feed new frames into pygame streamer</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">streamer</span><span class="o">.</span><span class="n">pygame_to_image</span><span class="p">(</span><span class="n">gui</span><span class="o">.</span><span class="n">window</span><span class="p">)</span>
+            <span class="n">streamer</span><span class="o">.</span><span class="n">image_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+            <span class="c1"># Handle Chronos info </span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data_hand</span><span class="o">.</span><span class="n">process_data</span><span class="p">()</span>
+            <span class="n">dataQueueOutput</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+            <span class="c1"># Feed console outputs from Chronos to be displayed on the web interface</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">consoleQueue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+
+    
+    <span class="n">consoleQueue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;End of Chronos Simulation&#39;</span><span class="p">)</span> <span class="c1"># This line is called when broken out of the main while loop.</span>
+
+    <span class="c1">### ----- Termination of subprocesses ----- ###</span>
+    <span class="n">streamer</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+    <span class="n">stop_stream_process</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+
+
+    <span class="c1"># Safely quits pygame</span>
+    <span class="n">pygame</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+
+    <span class="c1"># To allow the web interface ot safely stop the Chronos process from app.py</span>
+    <span class="n">consoleQueue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;stop chronos&#39;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Do try to follow this general structure for all Chronos <code class="docutils literal notranslate"><span class="pre">main.py</span></code> instances!</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Chronos Web</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="prep_req.html">Preparing the Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running.html">Running and expectations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_to_core_components.html">Introduction to the Core Components</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Core Modules for Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#chronos-web-interface">Chronos-Web Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core-web-modules">Core_web Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#additional-info">Additional info</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#gui-pygame">GUI (Pygame)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core-gui-modules">Core_gui Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Additional info</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-structure-the-main-chronos-file">How to Structure the Main Chronos File</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="branches.html">Example Branches for References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bugs_and_features.html">Current known bugs/features yet to be fixed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="future_development.html">Future Development Plans to Consider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="final_thoughts.html">Final Thoughts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="intro_to_core_components.html" title="previous chapter">Introduction to the Core Components</a></li>
+      <li>Next: <a href="branches.html" title="next chapter">Example Branches for References</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Ken.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/core_design_principles.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

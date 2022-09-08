@@ -1,0 +1,15 @@
+# How to Further Develop
+## Web Interface (Dash)
+
+## GUI (Pygame)
+
+## Example branches
+1. chronosweb_core
+2. chronosweb_gt
+3. chronosweb_osmviz
+
+## Structure of Chronos' `main.py`
+
+
+## Developing rule of thumb
+When developing something that should be inherently in all the web interfaces, do the following to patch all other branches:

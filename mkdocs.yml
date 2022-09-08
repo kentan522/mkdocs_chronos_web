@@ -1,4 +1,4 @@
-site_name: Chronos Web Interface Documentation
+site_name: Chronos - Web Interface Documentation
 theme:
   name: readthedocs
   highlightjs: true
@@ -14,3 +14,13 @@ markdown_extensions:
   - markdown_include.include:
       base_path: .
   - admonition
+nav:
+  - index.md
+  - prep_req.md
+  - running.md
+  - intro_to_core_components.md
+  - core_design_principles.md
+  - branches.md
+  - bugs_and_features.md
+  - future_development.md
+  - final_thoughts.md

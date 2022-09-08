@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Example Branches for References &#8212; Chronos Web  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Current known bugs/features yet to be fixed" href="bugs_and_features.html" />
+    <link rel="prev" title="Core Modules for Development" href="core_design_principles.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="example-branches-for-references">
+<h1>Example Branches for References<a class="headerlink" href="#example-branches-for-references" title="Permalink to this heading">¶</a></h1>
+<p>There are 3 branches that connects Chronos with the web interface in the Chronos repository. This section will briefly describe each of the 3 branches.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">chronosweb_core</span></code></p></li>
+</ol>
+<p>This is the main and most updated Chronos-web branch. Since this is the most updated branch that contains all the core modules mentioned in the previous section, any form of Chronos-web development should be made with reference to this branch. Do study the previous section - <a class="reference internal" href="core_design_principles.html"><span class="doc std std-doc">Core Modules for Development</span></a> to properly understand how to develop your own Chronos-web branch based on the structure of <code class="docutils literal notranslate"><span class="pre">chronosweb_core</span></code></p>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">chronosweb_gt</span></code></p></li>
+</ol>
+<p>This branch was used primarily for testing and developing the core gui modules. For now, it only renders text regarding the auction stage that it is in, as well as the links between carriers and their customers. The groundwork has been layed for this branch, and it can be further developed by simply writing pygame code for each auction stage.</p>
+<ol class="arabic simple" start="3">
+<li><p><code class="docutils literal notranslate"><span class="pre">chronosweb_osmviz</span></code></p></li>
+</ol>
+<p>This branch was used to test the possibility of integrating the python library <code class="docutils literal notranslate"><span class="pre">osmviz</span></code> into the web interface. As it turns out, this is possible since the visualisations of <code class="docutils literal notranslate"><span class="pre">osmviz</span></code> is built with pygame. However, since the pygame code was written in the source code, the source code has been copied into this branch to be edited. When running <code class="docutils literal notranslate"><span class="pre">osmviz</span></code> functions, Chronos then refers to the directory containing the edited source code instead.</p>
+<section id="patching">
+<h2>Patching<a class="headerlink" href="#patching" title="Permalink to this heading">¶</a></h2>
+<p>As mentioned, only the branch <code class="docutils literal notranslate"><span class="pre">chronosweb_core</span></code> is the most updated. However, sometimes there is a need to patch all 3 branches together with the same code, since they all share the same web interface. Do look into using the following <code class="docutils literal notranslate"><span class="pre">git</span></code> command on the command line:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># To patch file f from branch b into branch a</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="n">a</span> <span class="c1"># Ensure that you are in the receiving branch</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="o">--</span><span class="n">patch</span> <span class="n">b</span> <span class="n">f</span> <span class="c1"># Patch file f in branch a with that of branch b</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Chronos Web</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="prep_req.html">Preparing the Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running.html">Running and expectations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_to_core_components.html">Introduction to the Core Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core_design_principles.html">Core Modules for Development</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example Branches for References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#patching">Patching</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bugs_and_features.html">Current known bugs/features yet to be fixed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="future_development.html">Future Development Plans to Consider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="final_thoughts.html">Final Thoughts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="core_design_principles.html" title="previous chapter">Core Modules for Development</a></li>
+      <li>Next: <a href="bugs_and_features.html" title="next chapter">Current known bugs/features yet to be fixed</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Ken.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/branches.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

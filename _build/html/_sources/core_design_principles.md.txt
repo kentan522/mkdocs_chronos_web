@@ -265,7 +265,7 @@ The core `gui` class contains basic methods such as:
 The current core `gui` class is configured to render an example pygame environment with the help of the `movingcircle` object for the sake of demonstration and testing purposes only, and is not actually connected to Chronos. However, it may serve as a useful reference as to how you may want to structure your pygame environment. Most of the methods within the core `gui` class can be inheritted, and if need be, overwritten by the child `gui` class.
 
 <p align="center">
-  <img src="/assets/example_pygame_sim.png" width="800" height="500"/>
+  <img src="../../assets/example_pygame_sim.png" width="800" height="500"/>
 </p>
 <p align="center"><i>Pygame visualisation from the core gui module.</i></p>
 

@@ -1,0 +1,2 @@
+# **Chronos with Web Interface integration**
+This repository was created in early July 2022, as part of the UROP of a 3rd year MEng Civil Engineering student Ken. The aim of this project is to build a web interface as a front-end for Chronos to be deployed on it as a back-end. 

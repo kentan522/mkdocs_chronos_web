@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Current known bugs/features yet to be fixed &#8212; Chronos Web  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Future Development Plans to Consider" href="future_development.html" />
+    <link rel="prev" title="Example Branches for References" href="branches.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="current-known-bugs-features-yet-to-be-fixed">
+<h1>Current known bugs/features yet to be fixed<a class="headerlink" href="#current-known-bugs-features-yet-to-be-fixed" title="Permalink to this heading">¶</a></h1>
+<section id="bugs">
+<h2>Bugs<a class="headerlink" href="#bugs" title="Permalink to this heading">¶</a></h2>
+<p>Here are a list of bugs that have yet to be fixed.</p>
+<ul class="simple">
+<li><p>There is a latency delay between the real-time pygame window and the pygame window being shown on the web interface. Because the console screen outputs print statements from Chronos at real-time, the delay would be apparent to the user of the web interface.</p>
+<ul>
+<li><p>A quick fix is to add a sleep function to delay the console output by an arbitrary number of seconds to make it appear that there is no delay (since the console outputs would run in parallel with the visualisations). However, this would not be a permanent solution especiailly when it comes to sending commands - commands have to be sent in real-time and has to be reflected immediately.</p></li>
+</ul>
+</li>
+<li><p>The ‘send command’ button does not work in all cases (this is configured in the .js code). Right now, the safest option is to press the Enter key to send commands.</p></li>
+<li><p>Commands should not be allowed to be sent when Chronos is not running - this should be implemented</p></li>
+<li><p>Console window is made to stick the scroll to the bottom of the window when not interacted with to allow the console window to scroll while there is additional logs being shown. This is however made possible using an arbitrary magic number. Do refer to the <code class="docutils literal notranslate"><span class="pre">consoleOut</span></code> function in the custom javascript file.</p></li>
+</ul>
+</section>
+<section id="features-to-implement">
+<h2>Features to implement<a class="headerlink" href="#features-to-implement" title="Permalink to this heading">¶</a></h2>
+<p>Here are some of the features that you may be able to implement. Feel free to implement them if you wish!</p>
+<ul class="simple">
+<li><p>Create a class just like <code class="docutils literal notranslate"><span class="pre">web_table</span></code> that connects the graph on the web interface to Chronos</p></li>
+<li><p>Automate the window size of the web interface to fit the pygame window’s window size (since different pygame simulations can come in different window sizes)</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Chronos Web</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="prep_req.html">Preparing the Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running.html">Running and expectations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_to_core_components.html">Introduction to the Core Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core_design_principles.html">Core Modules for Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="branches.html">Example Branches for References</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Current known bugs/features yet to be fixed</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#features-to-implement">Features to implement</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="future_development.html">Future Development Plans to Consider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="final_thoughts.html">Final Thoughts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="branches.html" title="previous chapter">Example Branches for References</a></li>
+      <li>Next: <a href="future_development.html" title="next chapter">Future Development Plans to Consider</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Ken.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/bugs_and_features.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
